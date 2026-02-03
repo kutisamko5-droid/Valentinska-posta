@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentínka pre Nellku</title>
+
+  <style>
+    :root{
+      --bg1:#12060c;
+      --card:#f3ece7;
+      --ink:#7c0d20;
+      --yes1:#7b0a1f;
+      --yes2:#5f0717;
+      --no1:#cf1436;
+      --no2:#a30c25;
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius: 26px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: ui-serif, Georgia, "Times New Roman", serif;
+      background: radial-gradient(1200px 700px at 50% 35%, #3b1021 0%, var(--bg1) 55%, #070207 100%);
+      color:var(--ink);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      overflow:hidden;
+    }
+
+    /* jemné srdiečka */
+    .float{
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.9;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+    }
+    .float span{
+      position:absolute;
+      font-size:18px;
+      animation: drift 10s linear infinite;
+      opacity:.9;
+    }
+    .float span:nth-child(1){ left:6%;  top:18%; animation-duration:11s; }
+    .float span:nth-child(2){ left:90%; top:22%; animation-duration:12s; font-size:20px; }
+    .float span:nth-child(3){ left:92%; top:55%; animation-duration:13s; }
+    .float span:nth-child(4){ left:7%;  top:62%; animation-duration:14s; font-size:17px; }
+    @keyframes drift{
+      0%{ transform:translateY(0) rotate(0deg); }
+      50%{ transform:translateY(-18px) rotate(8deg); }
+      100%{ transform:translateY(0) rotate(0deg); }
+    }
+
+    .card{
+      width:min(980px, 92vw);
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:46px 34px 38px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .screen{ display:none; }
+    .screen.active{ display:block; }
+
+    h1{
+      margin:0;
+      text-align:center;
+      font-size: clamp(42px, 6vw, 72px);
+      line-height:1.05;
+      letter-spacing:.5px;
+      text-shadow: 0 3px 0 rgba(0,0,0,.06);
+      position:relative;
+      z-index:2;
+    }
+
+    .hint{
+      text-align:center;
+      margin-top:14px;
+      color:rgba(124,13,32,.8);
+      font-size:16px;
+      user-select:none;
+    }
+
+    /* ===================== OBÁLKA (zatvorená) ===================== */
+    .envelopeWrap{
+      margin:56px auto 0;
+      width:260px;
+      height:210px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    .envelope{
+      width:240px;
+      height:150px;
+      position:relative;
+      cursor:pointer;
+      user-select:none;
+      filter: drop-shadow(0 18px 25px rgba(0,0,0,.25));
+      transition: transform .12s ease;
+    }
+    .envelope:active{ transform: translateY(1px) scale(.995); }
+
+    .env-back{
+      position:absolute; inset:0;
+      background:linear-gradient(145deg, #a60d27, #7c0d20);
+      border-radius:18px;
+      z-index:1;
+    }
+
+    /* predný “V” */
+    .env-front{
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height:0; width:0;
+      border-left:120px solid transparent;
+      border-right:120px solid transparent;
+      border-top:86px solid rgba(255,255,255,.08);
+      margin:auto;
+      transform: translateY(18px);
+      z-index:3;
+      opacity:.95;
+    }
+
+    /* flap = zatvorený trojuholník */
+    .env-flap{
+      position:absolute;
+      left:0; right:0; top:-2px;
+      width:0; height:0;
+      border-left:120px solid transparent;
+      border-right:120px solid transparent;
+      border-bottom:78px solid #cf1436;
+      margin:auto;
+      z-index:4;
+      border-radius: 0 0 14px 14px;
+    }
+
+    /* ===================== VALENTÍN ===================== */
+    #screenVal{ cursor: crosshair; }
+
+    .valTop{
+      text-align:center;
+      margin-top:8px;
+      font-weight:900;
+      color:rgba(124,13,32,.85);
+      letter-spacing:1.2px;
+      font-size: 20px;
+      text-transform: uppercase;
+    }
+    .valBig{
+      text-align:center;
+      font-size: clamp(44px, 6.5vw, 80px);
+      margin-top:6px;
+      color:var(--ink);
+      line-height:1.02;
+      text-shadow: 0 3px 0 rgba(0,0,0,.06);
+    }
+    .heart{
+      display:flex;
+      justify-content:center;
+      margin:16px 0 10px;
+      font-size:44px;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.18));
+    }
+
+    .buttonArea{
+      position:relative;
+      width:min(560px, 92%);
+      height:170px;
+      margin: 10px auto 0;
+      border-radius:18px;
+    }
+
+    .btn{
+      border:0;
+      border-radius:14px;
+      padding:16px 0;
+      width: 190px;
+      font-weight:900;
+      letter-spacing:1px;
+      font-size:18px;
+      color:#fff;
+      cursor:pointer;
+      box-shadow: 0 14px 24px rgba(0,0,0,.18);
+      transition: transform .12s ease;
+      touch-action: manipulation;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+
+    /* ÁNO */
+    #yesBtn{
+      position:absolute;
+      left: 34px;
+      top: 54px;
+      background: linear-gradient(145deg, var(--yes1), var(--yes2));
+      z-index:2;
+    }
+
+    /* NIE */
+    #noBtn{
+      position:absolute;
+      left: 320px;
+      top: 54px;
+      background: linear-gradient(145deg, var(--no1), var(--no2));
+      z-index:3;
+    }
+
+    /* ===================== SMUTNÝ "NIE" ===================== */
+    .sadPanel{
+      width:min(520px, 92%);
+      margin: 16px auto 0;
+      text-align:center;
+      opacity:0;
+      transform: translateY(-6px);
+      transition: opacity .22s ease, transform .22s ease;
+      user-select:none;
+    }
+    .sadPanel.show{
+      opacity:1;
+      transform: translateY(0);
+    }
+    .sadPanel img{
+      width:220px;
+      max-width:70vw;
+      border-radius:18px;
+      object-fit:cover;
+      box-shadow: 0 16px 28px rgba(0,0,0,.18);
+      background:#fff;
+      display:block;
+      margin:0 auto;
+    }
+    .sadText{
+      margin-top:10px;
+      font-size:24px;
+      font-weight:900;
+      color: var(--ink);
+      text-shadow: 0 2px 0 rgba(0,0,0,.05);
+    }
+
+    /* ===================== DARČEKY ===================== */
+    .gifts{
+      margin: 26px auto 0;
+      width:min(720px, 92%);
+      text-align:center;
+    }
+    .gifts h3{
+      margin:0 0 14px;
+      font-size: 28px;
+      color: rgba(124,13,32,.9);
+    }
+    .giftRow{
+      display:flex;
+      gap:18px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .gift{
+      width:100px;
+      height:86px;
+      border-radius:18px;
+      border:0;
+      cursor:pointer;
+      background: linear-gradient(145deg, #7c0d20, #a60d27);
+      color:#fff;
+      font-size:28px;
+      box-shadow: 0 16px 26px rgba(0,0,0,.18);
+      transition: transform .12s ease;
+      user-select:none;
+    }
+    .gift:active{ transform: translateY(1px) scale(.99); }
+
+    /* ===================== MODAL ===================== */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:50;
+    }
+    .overlay.open{ display:flex; }
+
+    .modal{
+      width:min(820px, 94vw);
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 26px 24px 22px;
+      position:relative;
+    }
+    .modal h4{
+      margin:0 0 10px;
+      color: var(--ink);
+      font-size: 38px;
+      text-align:center;
+    }
+    .modal p{
+      margin:0;
+      color: rgba(124,13,32,.9);
+      text-align:center;
+      font-size:18px;
+      line-height:1.45;
+    }
+    .close{
+      position:absolute;
+      right:16px;
+      top:12px;
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      border:0;
+      cursor:pointer;
+      background: rgba(124,13,32,.08);
+      color: var(--ink);
+      font-size:22px;
+      font-weight:900;
+      user-select:none;
+    }
+
+    /* List */
+    .letterText{
+      margin-top: 12px;
+      white-space: pre-line;
+      text-align:left;
+      font-size:18px;
+      line-height:1.6;
+      color: rgba(124,13,32,.92);
+    }
+
+    /* fotky (väčšie) */
+    .photoGrid{
+      margin: 18px auto 0;
+      width: fit-content;
+      display:grid;
+      grid-template-columns: repeat(2, 170px);
+      gap:14px;
+    }
+    .photoGrid img{
+      width:170px;
+      height:170px;
+      border-radius:16px;
+      object-fit:cover;
+      box-shadow: 0 14px 22px rgba(0,0,0,.14);
+      background:#fff;
+      display:block;
+      cursor: zoom-in;
+    }
+
+    .photoItem{
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .photoCap{
+      font-size:14px;
+      font-weight:800;
+      letter-spacing:.5px;
+      color: rgba(124,13,32,.85);
+      text-align:center;
+      user-select:none;
+    }
+    .caption-top .photoCap{ order:-1; } /* prvé dve nad fotkou */
+
+    /* GIF v ÁNO modale */
+    .gifWrap{
+      margin-top:14px;
+      display:flex;
+      justify-content:center;
+    }
+    .gifWrap img{
+      width:260px;
+      max-width:82vw;
+      border-radius:18px;
+      box-shadow: 0 16px 28px rgba(0,0,0,.16);
+      background:#fff;
+      display:block;
+    }
+
+    /* Song */
+    .audioWrap{
+      margin-top:14px;
+      display:flex;
+      justify-content:center;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+    }
+    audio{ width:min(560px, 92%); }
+
+    /* jednoduchý lightbox pre fotky */
+    .imgOverlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:80;
+    }
+    .imgOverlay.open{ display:flex; }
+    .imgOverlay img{
+      max-width:min(96vw, 980px);
+      max-height: 86vh;
+      border-radius:18px;
+      box-shadow: 0 22px 55px rgba(0,0,0,.45);
+      background:#fff;
+      object-fit:contain;
+      cursor: zoom-out;
+    }
+
+    @media (max-width:560px){
+      .buttonArea{ height:220px; }
+      #yesBtn{ left: calc(50% - 95px); top: 26px; }
+      #noBtn{  left: calc(50% - 95px); top: 118px; }
+      .envelopeWrap{ margin-top:42px; }
+
+      .photoGrid{ grid-template-columns: repeat(2, 150px); }
+      .photoGrid img{ width:150px; height:150px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="float" aria-hidden="true">
+    <span>💗</span><span>💖</span><span>🌹</span><span>💞</span>
+  </div>
+
+  <main class="card" id="card">
+    <!-- SCREEN 1: OBÁLKA -->
+    <section id="screenIntro" class="screen active">
+      <h1>List pre teba 💌</h1>
+
+      <div class="envelopeWrap">
+        <div id="envelope" class="envelope" role="button" aria-label="Obálka" tabindex="0">
+          <div class="env-back"></div>
+          <div class="env-front"></div>
+          <div class="env-flap"></div>
+        </div>
+      </div>
+
+      <div class="hint" id="hint">Klikni na obálku</div>
+    </section>
+
+    <!-- SCREEN 2: VALENTÍN -->
+    <section id="screenVal" class="screen">
+      <div class="valTop">Budeš moja</div>
+      <div class="valBig">Valentínka?</div>
+      <div class="heart" aria-hidden="true">💗</div>
+
+      <div class="buttonArea" id="buttonArea">
+        <button id="yesBtn" class="btn" type="button">ÁNO</button>
+        <button id="noBtn" class="btn" type="button">NIE</button>
+      </div>
+
+      <div id="sadPanel" class="sadPanel" hidden>
+        <img id="sadGif" src="https://media1.tenor.com/m/cgZNZOuh6SsAAAAd/sad-bear.gif" alt="Smutný medvedík">
+        <div id="sadText" class="sadText">Prečooo... 😭</div>
+      </div>
+
+      <div class="gifts">
+        <h3>Vyber si darček 🎁</h3>
+        <div class="giftRow">
+          <button class="gift" type="button" data-modal="letter" aria-label="List">💌</button>
+          <button class="gift" type="button" data-modal="photos" aria-label="Fotky">📸</button>
+          <button class="gift" type="button" data-modal="music" aria-label="Pesnička">🎵</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <button class="close" id="closeModal" type="button" aria-label="Zavrieť">✕</button>
+
+      <div class="modalBody" data-body="letter" hidden>
+        <h4>Môj list ❤️</h4>
+        <div class="letterText">Moja láska, Nellka,
+
+od chvíle, čo som ťa prvýkrát uvidel a ty si ma neodsúdila podľa výzoru ani podľa toho, z akej rodiny pochádzam, som vedel, že si výnimočná. Vtedy som si uvedomil, že v tebe mám niekoho, kto ma berie takého, aký som – a že v tebe mám oporu, na ktorú sa môžem spoľahnúť vždy.
+
+Milujem tvoj smiech, tvoj humor a tie tvoje crazy nálady, ktoré mi dokážu zlepšiť aj ten najhorší deň. Milujem tvoju úprimnosť, starostlivosť a to, ako si ideš za svojimi snami bez toho, aby si sa vzdávala. Obdivujem ťa za to viac, než ti viem slovami povedať.
+
+Pri tebe sa cítim prijatý, pokojný a doma. Ďakujem ti za to, že pri mne stojíš, že mi veríš a že mi každý deň ukazuješ, čo znamená skutočná láska.
+
+Neviem, čo všetko nás čaká, ale viem jedno – chcem to prežívať s tebou.
+Milujem ťa. ❤️
+
+Tvoj Samko</div>
+      </div>
+
+      <div class="modalBody" data-body="photos" hidden>
+        <h4>Naše fotky 📸</h4>
+        <p>Klikni na fotku a zväčší sa.</p>
+
+        <div class="photoGrid" id="photoGrid">
+          <figure class="photoItem caption-top">
+            <figcaption class="photoCap">Nádhernáá😍</figcaption>
+            <img src="75B39467-4130-4032-B5C8-9408F5A4DA84.JPG" alt="Foto 1">
+          </figure>
+
+          <figure class="photoItem caption-top">
+            <figcaption class="photoCap">My dvajaaa😜</figcaption>
+            <img src="IMG_6721.jpg" alt="Foto 2">
+          </figure>
+
+          <figure class="photoItem">
+            <img src="04B582DD-C9DB-4B64-9BC4-972217CF5B42%202.JPG" alt="Foto 3">
+            <figcaption class="photoCap">Hottnaaa🔥</figcaption>
+          </figure>
+
+          <figure class="photoItem">
+            <img src="IMG_6794.JPG" alt="Foto 4">
+            <figcaption class="photoCap">Cutieeee Pieeeee😚</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="modalBody" data-body="music" hidden>
+        <h4>🎵 🎵 🎵 🎵</h4>
+        <p>Táto pesníčka mi hrá v hlave keď na teba myslím alebo ťa vidím😋😋</p>
+        <div class="audioWrap">
+          <audio controls>
+            <source src="Sweat%20On%20Your%20Skin.mp4" type="audio/mp4">
+            Tvoj prehliadač nepodporuje audio.
+          </audio>
+        </div>
+      </div>
+
+      <div class="modalBody" data-body="yes" hidden>
+        <h4>Tak teda áno. ❤️</h4>
+        <p>
+          14. februára chcem, aby si bola len moja.<br>
+          Buď pripravená na náš Valentín, Nellka. 💫
+        </p>
+        <div class="gifWrap">
+          <img src="https://media.tenor.com/0cNM_9li440AAAAj/dudu-giving-flowers-bubu-flowers.gif" alt="Kvety pre teba">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX pre fotky -->
+  <div id="imgOverlay" class="imgOverlay" aria-hidden="true">
+    <img id="imgOverlayPic" src="" alt="Zväčšená fotka">
+  </div>
+
+  <script>
+    // =============== Screen prepínanie ===============
+    const screenIntro = document.getElementById('screenIntro');
+    const screenVal   = document.getElementById('screenVal');
+    const envelope    = document.getElementById('envelope');
+
+    function showVal(){
+      screenIntro.classList.remove('active');
+      screenVal.classList.add('active');
+    }
+
+    function go(){
+      showVal();
+    }
+    envelope.addEventListener('click', go);
+    envelope.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        go();
+      }
+    });
+
+    // =============== Tlačidlá ÁNO/NIE ===============
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn  = document.getElementById('noBtn');
+
+    // =============== "NIE" (klik -> smutný obrázok + text) ===============
+    const sadPanel = document.getElementById('sadPanel');
+    const sadText  = document.getElementById('sadText');
+
+    const SAD_LINES = [
+      'Prečooo... 😭',
+      'Au… to bolí. 🥺',
+      'Dobre no… budem smutný. 😔',
+      'Takto ma lámeš… 😢',
+      'Fúha… toto som nečakal. 😞'
+    ];
+
+    function showSad(){
+      const line = SAD_LINES[Math.floor(Math.random() * SAD_LINES.length)];
+      sadText.textContent = line;
+
+      sadPanel.hidden = false;
+      sadPanel.classList.remove('show');
+      requestAnimationFrame(() => sadPanel.classList.add('show'));
+
+      try { sadPanel.scrollIntoView({ behavior:'smooth', block:'center' }); } catch(_) {}
+    }
+
+    // NIE je fixné (neuteká) a na klik ukáže smútok
+    noBtn.addEventListener('click', showSad);
+
+    // =============== Modaly ===============
+    const overlay = document.getElementById('overlay');
+    const closeModalBtn = document.getElementById('closeModal');
+    const bodies = Array.from(document.querySelectorAll('.modalBody'));
+
+    function openModal(which){
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden','false');
+      bodies.forEach(b => b.hidden = (b.dataset.body !== which));
+    }
+    function closeModal(){
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden','true');
+      bodies.forEach(b => b.hidden = true);
+    }
+
+    // ÁNO -> otvorí modal s textom + gifom
+    yesBtn.addEventListener('click', () => openModal('yes'));
+
+    // darčeky
+    document.querySelectorAll('.gift').forEach(btn => {
+      btn.addEventListener('click', () => openModal(btn.dataset.modal));
+    });
+
+    closeModalBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+    window.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+
+    // =============== Lightbox pre fotky ===============
+    const imgOverlay = document.getElementById('imgOverlay');
+    const imgOverlayPic = document.getElementById('imgOverlayPic');
+
+    function openImg(src, alt){
+      imgOverlayPic.src = src;
+      imgOverlayPic.alt = alt || 'Zväčšená fotka';
+      imgOverlay.classList.add('open');
+      imgOverlay.setAttribute('aria-hidden', 'false');
+    }
+    function closeImg(){
+      imgOverlay.classList.remove('open');
+      imgOverlay.setAttribute('aria-hidden', 'true');
+      imgOverlayPic.src = '';
+    }
+
+    document.querySelectorAll('#photoGrid img').forEach(img => {
+      img.addEventListener('click', () => openImg(img.getAttribute('src'), img.getAttribute('alt')));
+    });
+
+    imgOverlay.addEventListener('click', closeImg);
+    window.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeImg(); });
+  </script>
+</body>
+</html>
