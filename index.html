@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Love Mail</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- Symetrické pozadie -->
+  <div class="bg">
+    <span class="blob blob--tl"></span>
+    <span class="blob blob--tr"></span>
+    <span class="blob blob--bl"></span>
+    <span class="blob blob--br"></span>
+    <span class="blob blob--t"></span>
+    <span class="blob blob--b"></span>
+  </div>
+
+  <!-- Presné centrovanie scény -->
+  <main class="stage">
+    <section class="mail" id="mail" aria-label="Love Mail">
+      <h1 class="title">Love Mail</h1>
+
+      <button class="envelope" id="toggle" aria-label="Open envelope">
+        <span class="envelope__shadow"></span>
+
+        <!-- List -->
+        <span class="letter" aria-hidden="true">
+          <span class="letter__paper">
+            <span class="hint">click the red envelope to open</span>
+          </span>
+        </span>
+
+        <!-- Obálka -->
+        <span class="env env--back" aria-hidden="true"></span>
+        <span class="env env--front" aria-hidden="true"></span>
+        <span class="flap" aria-hidden="true"></span>
+      </button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine Card</title>
+
+  <style>
+    :root{
+      --bg1:#f3e3df;
+      --bg2:#e7d2cf;
+
+      --card:#f7f0e6;
+      --shadow: 0 18px 40px rgba(0,0,0,.12);
+
+      --red:#c9162e;
+      --red2:#a71226;
+
+      --w: min(860px, 92vw);
+      --h: min(520px, 62vh);
+      --radius: 28px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      overflow:hidden; /* aby nič nescrollovalo */
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 50% 30%, var(--bg1), var(--bg2));
+    }
+
+    /* ===== FIX POZADIE (NEHÝBE SA) ===== */
+    .bg{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+    }
+
+    .blob{
+      position:absolute;
+      width: 190px;
+      height: 130px;
+      border-radius: 999px;
+      box-shadow: 0 14px 34px rgba(0,0,0,.08);
+      transform: rotate(-18deg);
+      background: radial-gradient(circle at 30% 30%, #5aa75a, #2f7a37);
+      opacity:.95;
+    }
+    .blob::after{
+      content:"";
+      position:absolute;
+      inset:-22px -28px;
+      border-radius:999px;
+      background: radial-gradient(circle at 60% 35%, #d1545c, #b13e47);
+      z-index:-1;
+      transform: rotate(14deg);
+      opacity:.95;
+    }
+
+    /* symetria */
+    .blob--tl{ top: 8%;  left: 14%; }
+    .blob--tr{ top: 8%;  right: 14%; transform: rotate(18deg); }
+    .blob--bl{ bottom: 10%; left: 18%; transform: rotate(12deg); }
+    .blob--br{ bottom: 10%; right: 18%; transform: rotate(-12deg); }
+    .blob--t { top: 18%; left: 50%; transform: translateX(-50%) rotate(8deg); width:160px; height:112px; opacity:.85;}
+    .blob--b { bottom: 18%; left: 50%; transform: translateX(-50%) rotate(-8deg); width:160px; height:112px; opacity:.85;}
+
+    /* ===== STRED SCÉNY ===== */
+    .stage{
+      position:relative;
+      z-index:1;                 /* nad pozadím */
+      height:100%;
+      display:grid;
+      place-items:center;        /* presný stred */
+      padding: 24px;
+    }
+
+    /* ===== KARTA ===== */
+    .card{
+      width: var(--w);
+      height: var(--h);
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position:relative;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding: 42px 28px;
+
+      /* dôležité: animuj transform (nezmení layout, nič “nescrollne”) */
+      transform: translate3d(0,0,0);
+      opacity:1;
+
+      transition:
+        transform 650ms cubic-bezier(.2,.9,.2,1),
+        opacity 420ms ease;
+    }
+
+    .card h2{
+      margin:0 0 8px;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing:.06em;
+      color: #d22a3a;
+      font-weight:800;
+    }
+
+    .card h1{
+      margin:0 0 22px;
+      font-size: clamp(44px, 6.2vw, 78px);
+      color: #9e0f2a;
+      font-family: ui-serif, "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
+      line-height:1;
+    }
+
+    .heart{
+      width: 86px;
+      height: 74px;
+      margin: -8px auto 18px;
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.10));
+      background:
+        radial-gradient(circle at 30% 35%, #ffc1d0, #ff8fb0 70%),
+        radial-gradient(circle at 70% 35%, #ffc1d0, #ff8fb0 70%);
+      background-size: 50% 100%, 50% 100%;
+      background-position: left, right;
+      background-repeat:no-repeat;
+      transform: rotate(0deg);
+      clip-path: polygon(50% 92%, 5% 45%, 18% 18%, 35% 15%, 50% 30%, 65% 15%, 82% 18%, 95% 45%);
+      border-radius: 18px;
+      opacity:.95;
+    }
+
+    .actions{
+      display:flex;
+      gap: 18px;
+      justify-content:center;
+      margin-top: 6px;
+    }
+
+    .btn{
+      min-width: 150px;
+      height: 64px;
+      border-radius: 14px;
+      border:0;
+      font-weight:800;
+      font-size: 22px;
+      color:#fff;
+      cursor:pointer;
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn--yes{ background: #8f0d22; }
+    .btn--no { background: #d11f3b; }
+
+    .home{
+      position:absolute;
+      left:50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 2px solid rgba(158,15,42,.55);
+      background: rgba(255,255,255,.35);
+      display:grid;
+      place-items:center;
+      font-size: 20px;
+      cursor:pointer;
+      transition: transform 120ms ease;
+    }
+    .home:active{ transform: translateX(-50%) translateY(1px); }
+
+    /* ===== DISMISS (ODÍDE PREČ) ===== */
+    .card.is-dismissed{
+      transform: translate3d(0, 120vh, 0) rotate(2deg);
+      opacity: 0;
+      pointer-events:none;
+    }
+
+    /* ak chceš opačným smerom pri NO */
+    .card.is-dismissed--left{
+      transform: translate3d(-120vw, 0, 0) rotate(-4deg);
+      opacity:0;
+      pointer-events:none;
+    }
+
+    /* malé doladenie pre mobil */
+    @media (max-width:520px){
+      .btn{ min-width: 130px; height: 58px; font-size: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- FIX pozadie -->
+  <div class="bg" aria-hidden="true">
+    <span class="blob blob--tl"></span>
+    <span class="blob blob--tr"></span>
+    <span class="blob blob--bl"></span>
+    <span class="blob blob--br"></span>
+    <span class="blob blob--t"></span>
+    <span class="blob blob--b"></span>
+  </div>
+
+  <main class="stage">
+    <section class="card" id="card" aria-label="Valentine card">
+      <div>
+        <h2>WILL YOU BE MY</h2>
+        <h1>Valentine?</h1>
+        <div class="heart"></div>
+
+        <div class="actions">
+          <button class="btn btn--yes" id="yes">YES</button>
+          <button class="btn btn--no"  id="no">NO</button>
+        </div>
+      </div>
+
+      <button class="home" id="home" aria-label="Home">🏠</button>
+    </section>
+  </main>
+
+  <script>
+    const card = document.getElementById('card');
+    const yes  = document.getElementById('yes');
+    const no   = document.getElementById('no');
+    const home = document.getElementById('home');
+
+    // YES: odíde dole
+    yes.addEventListener('click', () => {
+      card.classList.remove('is-dismissed--left');
+      card.classList.add('is-dismissed');
+    });
+
+    // NO: odíde doľava (aby to bolo "iné")
+    no.addEventListener('click', () => {
+      card.classList.remove('is-dismissed');
+      card.classList.add('is-dismissed--left');
+    });
+
+    // Home: vráti kartu späť (ak chceš)
+    home.addEventListener('click', () => {
+      card.classList.remove('is-dismissed', 'is-dismissed--left');
+    });
+  </script>
+</body>
+</html>
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Love Mail</title>
+
+  <style>
+    :root{
+      --bg1:#f3e3df;
+      --bg2:#e7d2cf;
+
+      --card:#f7f0e6;
+      --shadow: 0 18px 40px rgba(0,0,0,.12);
+
+      --red:#c9162e;
+      --red2:#a71226;
+
+      --w: min(860px, 92vw);
+      --h: min(600px, 78vh);
+      --radius: 28px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      overflow:hidden; /* nikdy žiadny scroll */
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 50% 30%, var(--bg1), var(--bg2));
+    }
+
+    /* ===== FIX pozadie ===== */
+    .bg{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:.95;
+    }
+    .blob{
+      position:absolute;
+      width: 190px;
+      height: 130px;
+      border-radius: 999px;
+      box-shadow: 0 14px 34px rgba(0,0,0,.08);
+      transform: rotate(-18deg);
+      background: radial-gradient(circle at 30% 30%, #5aa75a, #2f7a37);
+    }
+    .blob::after{
+      content:"";
+      position:absolute;
+      inset:-22px -28px;
+      border-radius:999px;
+      background: radial-gradient(circle at 60% 35%, #d1545c, #b13e47);
+      z-index:-1;
+      transform: rotate(14deg);
+      opacity:.95;
+    }
+    /* symetria */
+    .blob--tl{ top: 8%;  left: 14%; }
+    .blob--tr{ top: 8%;  right: 14%; transform: rotate(18deg); }
+    .blob--bl{ bottom: 10%; left: 18%; transform: rotate(12deg); }
+    .blob--br{ bottom: 10%; right: 18%; transform: rotate(-12deg); }
+    .blob--t { top: 18%; left: 50%; transform: translateX(-50%) rotate(8deg); width:160px; height:112px; opacity:.85;}
+    .blob--b { bottom: 18%; left: 50%; transform: translateX(-50%) rotate(-8deg); width:160px; height:112px; opacity:.85;}
+
+    /* ===== stage ===== */
+    .stage{
+      position:relative;
+      z-index:1;
+      height:100%;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    /* ===== scenes ===== */
+    .scene{
+      width: var(--w);
+      height: var(--h);
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position:absolute;
+      inset:auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding: 42px 28px;
+      transform: translate3d(0,0,0);
+      opacity:1;
+      transition: transform 650ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease;
+    }
+
+    .scene.is-hidden{
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .scene.slide-out{
+      transform: translate3d(0, 120vh, 0) rotate(2deg);
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .scene.slide-in{
+      transform: translate3d(0, 120vh, 0);
+      opacity:0;
+    }
+    .scene.slide-in.is-active{
+      transform: translate3d(0,0,0);
+      opacity:1;
+    }
+
+    /* ===== closed (envelope) ===== */
+    .title-script{
+      margin:0;
+      font-size: clamp(40px, 6vw, 74px);
+      color:#9e0f2a;
+      font-family: ui-serif, "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
+      text-shadow: 0 3px 0 rgba(0,0,0,.08);
+    }
+
+    .subhint{
+      margin: 18px 0 0;
+      color:#b35a5f;
+      font-size: clamp(14px, 1.8vw, 18px);
+      letter-spacing:.2px;
+    }
+
+    .envelope{
+      width:min(460px, 82%);
+      height: 240px;
+      border:0;
+      background:transparent;
+      cursor:pointer;
+      position:relative;
+      margin-top: 22px;
+    }
+
+    .env{
+      position:absolute; inset:0;
+      border-radius: 18px;
+      background: var(--red);
+      box-shadow: 0 10px 18px rgba(0,0,0,.12);
+    }
+    .env--front{
+      background: linear-gradient(180deg, var(--red), var(--red2));
+      clip-path: polygon(0 32%, 50% 62%, 100% 32%, 100% 100%, 0 100%);
+      z-index:3;
+    }
+    .flap{
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, var(--red2), var(--red));
+      clip-path: polygon(0 32%, 50% 0, 100% 32%, 50% 62%);
+      transform-origin: 50% 32%;
+      z-index:4;
+      transition: transform 650ms cubic-bezier(.2,.9,.2,1);
+      backface-visibility:hidden;
+    }
+    .letter-peek{
+      position:absolute;
+      left:50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      width: 86%;
+      height: 70%;
+      border-radius: 14px;
+      background:#f5efe6;
+      box-shadow: 0 12px 22px rgba(0,0,0,.14);
+      z-index:2;
+    }
+    .scene-closed .envelope:hover .flap{
+      transform: rotateX(18deg);
+    }
+
+    /* ===== open (flowers) ===== */
+    .flowers-wrap{
+      width:100%;
+      max-width: 720px;
+    }
+
+    .flowers-title{
+      margin:0 0 18px;
+      font-size: clamp(42px, 6vw, 76px);
+      color:#9e0f2a;
+      font-family: ui-serif, "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
+      text-shadow: 0 3px 0 rgba(0,0,0,.08);
+    }
+
+    .flowers-text{
+      margin: 0 auto 18px;
+      max-width: 640px;
+      color:#d22a3a;
+      font-family: ui-serif, Georgia, serif;
+      font-size: clamp(16px, 2.2vw, 22px);
+      line-height:1.6;
+    }
+
+    .emoji-row{
+      font-size: 54px;
+      margin: 10px 0 12px;
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.10));
+    }
+
+    .choose{
+      margin: 22px 0 14px;
+      font-size: clamp(22px, 2.6vw, 30px);
+      color:#d22a3a;
+      font-family: ui-serif, Georgia, serif;
+      font-weight:700;
+    }
+
+    .gifts{
+      display:flex;
+      justify-content:center;
+      gap: 24px;
+      margin-top: 10px;
+    }
+
+    .gift{
+      width: 120px;
+      height: 110px;
+      border-radius: 16px;
+      border:0;
+      cursor:pointer;
+      background: #8f0d22;
+      color:#fff;
+      font-size: 36px;
+      box-shadow: 0 14px 30px rgba(0,0,0,.12);
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+    .gift:active{ transform: translateY(1px); }
+
+    /* ===== modal ===== */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+      padding: 22px;
+    }
+    .overlay.is-open{ display:flex; }
+
+    .modal{
+      width: min(760px, 92vw);
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      position:relative;
+      padding: 26px 26px 22px;
+      transform: translate3d(0, 10px, 0);
+      opacity:0;
+      transition: transform 220ms ease, opacity 220ms ease;
+    }
+    .overlay.is-open .modal{
+      transform: translate3d(0,0,0);
+      opacity:1;
+    }
+
+    .close{
+      position:absolute;
+      right: 14px;
+      top: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border:0;
+      cursor:pointer;
+      background: transparent;
+      color:#b2192e;
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 40px;
+    }
+
+    .modal h3{
+      margin: 0 0 12px;
+      text-align:center;
+      color:#9e0f2a;
+      font-size: clamp(28px, 3.8vw, 44px);
+      font-family: ui-serif, "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
+    }
+    .modal p{
+      margin: 0 auto;
+      max-width: 640px;
+      text-align:center;
+      color:#d22a3a;
+      font-family: ui-serif, Georgia, serif;
+      font-size: clamp(15px, 2vw, 18px);
+      line-height:1.65;
+    }
+
+    /* gallery */
+    .gallery{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .viewer{
+      width:100%;
+      border-radius: 14px;
+      box-shadow: 0 12px 22px rgba(0,0,0,.12);
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      background:#eee;
+    }
+    .thumbs{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+    .thumbs button{
+      border:0;
+      padding:0;
+      border-radius: 12px;
+      overflow:hidden;
+      cursor:pointer;
+      box-shadow: 0 10px 18px rgba(0,0,0,.10);
+      background:#eee;
+    }
+    .thumbs img{
+      width:100%;
+      height: 70px;
+      object-fit: cover;
+      display:block;
+    }
+
+    /* youtube */
+    .yt{
+      width:100%;
+      aspect-ratio: 16/9;
+      border-radius: 14px;
+      overflow:hidden;
+      box-shadow: 0 12px 22px rgba(0,0,0,.12);
+      background:#000;
+    }
+    iframe{ width:100%; height:100%; border:0; }
+
+    @media (max-width:520px){
+      .gift{ width: 104px; height: 96px; font-size: 32px; }
+      .thumbs{ grid-template-columns: repeat(3, 1fr); }
+      .thumbs img{ height: 62px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .scene, .flap, .modal{ transition:none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- FIX background -->
+  <div class="bg" aria-hidden="true">
+    <span class="blob blob--tl"></span>
+    <span class="blob blob--tr"></span>
+    <span class="blob blob--bl"></span>
+    <span class="blob blob--br"></span>
+    <span class="blob blob--t"></span>
+    <span class="blob blob--b"></span>
+  </div>
+
+  <main class="stage">
+
+    <!-- SCENE 1: zatvorený list -->
+    <section class="scene scene-closed" id="sceneClosed" aria-label="Closed envelope">
+      <div>
+        <h1 class="title-script">Love Mail</h1>
+
+        <button class="envelope" id="openEnvelope" aria-label="Open envelope">
+          <span class="letter-peek" aria-hidden="true"></span>
+          <span class="env env--front" aria-hidden="true"></span>
+          <span class="flap" aria-hidden="true"></span>
+        </button>
+
+        <p class="subhint">click the red envelope to open</p>
+      </div>
+    </section>
+
+    <!-- SCENE 2: Flowers for you -->
+    <section class="scene scene-open slide-in" id="sceneOpen" aria-label="Flowers screen" hidden>
+      <div class="flowers-wrap">
+        <h1 class="flowers-title">Flowers for you</h1>
+
+        <p class="flowers-text">
+          My dearest love, these flowers pale in comparison to your beauty.
+          Each petal reminds me of the moments we've shared, and I hope this brings
+          a smile to your face.
+        </p>
+
+        <div class="emoji-row">🌹💐🌸</div>
+
+        <div class="choose">Choose your gift</div>
+
+        <div class="gifts">
+          <button class="gift" data-modal="letter" aria-label="Open letter">💌</button>
+          <button class="gift" data-modal="photos" aria-label="Open photos">📸</button>
+          <button class="gift" data-modal="song" aria-label="Open song">🎵</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Gift modal">
+      <button class="close" id="closeModal" aria-label="Close">×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <template id="tplLetter">
+    <h3>My Dearest My Love,</h3>
+    <p>
+      From the moment I met you, my world changed forever. Your smile lights up my darkest days,
+      and your laughter is the sweetest melody. I cherish every moment we spend together and look
+      forward to many more.<br><br>
+      Will you be my Valentine and make this journey even more beautiful?<br><br>
+      With all my love,<br>
+      Your Admirer
+    </p>
+  </template>
+
+  <template id="tplPhotos">
+    <h3>Happy moments</h3>
+
+    <!-- hlavný náhľad -->
+    <img class="viewer" id="viewer" alt="Photo preview">
+
+    <!-- 5 fotiek (vymeníš si cesty) -->
+    <div class="thumbs" id="thumbs">
+      <button type="button" data-src="assets/photo1.jpg" aria-label="Photo 1">
+        <img src="assets/photo1.jpg" alt="Photo 1">
+      </button>
+      <button type="button" data-src="assets/photo2.jpg" aria-label="Photo 2">
+        <img src="assets/photo2.jpg" alt="Photo 2">
+      </button>
+      <button type="button" data-src="assets/photo3.jpg" aria-label="Photo 3">
+        <img src="assets/photo3.jpg" alt="Photo 3">
+      </button>
+      <button type="button" data-src="assets/photo4.jpg" aria-label="Photo 4">
+        <img src="assets/photo4.jpg" alt="Photo 4">
+      </button>
+      <button type="button" data-src="assets/photo5.jpg" aria-label="Photo 5">
+        <img src="assets/photo5.jpg" alt="Photo 5">
+      </button>
+    </div>
+
+    <p style="margin-top:12px;">(Neskôr si len vymeníme fotky a popisky.)</p>
+  </template>
+
+  <template id="tplSong">
+    <h3>A little song</h3>
+    <div class="yt">
+      <!-- TODO: vymeníš VIDEO_ID -->
+      <iframe
+        id="ytFrame"
+        src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0"
+        title="YouTube video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p style="margin-top:12px;">(Potom doladíme, aká pesnička presne.)</p>
+  </template>
+
+  <script>
+    const sceneClosed = document.getElementById('sceneClosed');
+    const sceneOpen   = document.getElementById('sceneOpen');
+    const openEnvelope = document.getElementById('openEnvelope');
+
+    const overlay = document.getElementById('overlay');
+    const modalBody = document.getElementById('modalBody');
+    const closeModalBtn = document.getElementById('closeModal');
+
+    const tplLetter = document.getElementById('tplLetter');
+    const tplPhotos = document.getElementById('tplPhotos');
+    const tplSong   = document.getElementById('tplSong');
+
+    // --- Scene transition: envelope -> flowers
+    openEnvelope.addEventListener('click', () => {
+      // slide out old
+      sceneClosed.classList.add('slide-out');
+
+      // prepare new
+      sceneOpen.hidden = false;
+      sceneOpen.classList.add('slide-in');
+
+      // next frame -> animate in
+      requestAnimationFrame(() => {
+        sceneOpen.classList.add('is-active');
+      });
+
+      // po animácii uprac
+      setTimeout(() => {
+        sceneClosed.hidden = true;
+      }, 700);
+    });
+
+    // --- Modal helpers
+    function openModal(type){
+      modalBody.innerHTML = '';
+      let node;
+
+      if(type === 'letter') node = tplLetter.content.cloneNode(true);
+      if(type === 'photos') node = tplPhotos.content.cloneNode(true);
+      if(type === 'song')   node = tplSong.content.cloneNode(true);
+
+      modalBody.appendChild(node);
+
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+
+      // gallery init
+      if(type === 'photos'){
+        const viewer = document.getElementById('viewer');
+        const thumbs = document.getElementById('thumbs');
+
+        // default prvá fotka
+        const first = thumbs.querySelector('button[data-src]');
+        if(first) viewer.src = first.dataset.src;
+
+        thumbs.addEventListener('click', (e) => {
+          const btn = e.target.closest('button[data-src]');
+          if(!btn) return;
+          viewer.src = btn.dataset.src;
+        });
+      }
+    }
+
+    function closeModal(){
+      // stop youtube playback: reset iframe src (ak tam je)
+      const frame = document.getElementById('ytFrame');
+      if(frame){
+        const src = frame.src;
+        frame.src = src; // refresh -> stop
+      }
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      modalBody.innerHTML = '';
+    }
+
+    // click gifts
+    sceneOpen.addEventListener('click', (e) => {
+      const btn = e.target.closest('.gift[data-modal]');
+      if(!btn) return;
+      openModal(btn.dataset.modal);
+    });
+
+    // close actions
+    closeModalBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) closeModal();
+    });
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
+    });
+  </script>
+</body>
+</html>
