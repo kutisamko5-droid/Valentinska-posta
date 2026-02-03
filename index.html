@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<title>Lásková pošta</title>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #2c1810, #4a1a0f, #1a0a05);
+  background-size: 400% 400%;
+  animation: gradientShift 10s ease infinite;
+  overflow: hidden;
+  cursor: default;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hearts {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+.heart {
+  position: absolute;
+  color: rgba(255, 100, 150, 0.3);
+  font-size: 24px;
+  animation: float 6s linear infinite;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+.screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+}
+.hidden {
+  display: none;
+}
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+}
+h1, h2, h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+h1 {
+  font-size: 2.5em;
+  color: #d63384;
+}
+h2 {
+  font-size: 1.5em;
+  color: #333;
+}
+h3 {
+  font-size: 1.2em;
+  color: #555;
+}
+.envelope {
+  width: 200px;
+  height: 140px;
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 5px;
+  margin: 20px auto;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+.envelope .flap {
+  width: 0;
+  height: 0;
+  border-left: 100px solid transparent;
+  border-right: 100px solid transparent;
+  border-bottom: 70px solid #dee2e6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top center;
+  transition: transform 0.8s ease;
+}
+.envelope.closed .flap {
+  transform: rotateX(0deg);
+}
+.envelope.open .flap {
+  transform: rotateX(-180deg);
+}
+.photo-card {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 160px;
+  height: 100px;
+  background: white;
+  border-radius: 5px;
+  overflow: hidden;
+  transform: translateY(-120px);
+  opacity: 0;
+  transition: all 1.2s ease;
+}
+.photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-card.slide-out {
+  transform: translateY(0);
+  opacity: 1;
+}
+.valentine h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+.valentine h1 {
+  font-size: 3em;
+  margin-bottom: 30px;
+  color: #d63384;
+}
+button {
+  padding: 15px 30px;
+  font-size: 1.2em;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 10px;
+  transition: all 0.3s;
+}
+#yes-btn {
+  background: #28a745;
+  color: white;
+}
+#yes-btn:hover {
+  background: #218838;
+}
+#no-btn {
+  background: #dc3545;
+  color: white;
+  position: relative;
+}
+#no-btn:hover {
+  background: #c82333;
+}
+.gifts {
+  margin-top: 40px;
+}
+.gifts button {
+  font-size: 2em;
+  padding: 20px;
+  margin: 10px;
+  background: #f8f9fa;
+  border: 2px solid #dee2e6;
+}
+.gifts button:hover {
+  background: #e9ecef;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow: auto;
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2em;
+  cursor: pointer;
+  color: #333;
+}
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.photo-grid img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+audio {
+  width: 100%;
+}
+.valentine-screen {
+  cursor: crosshair;
+}
+</style>
+</head>
+<body>
+<div class="hearts">
+  <div class="heart" style="left: 10%; animation-delay: 0s;">❤️</div>
+  <div class="heart" style="left: 20%; animation-delay: 1s;">💖</div>
+  <div class="heart" style="left: 30%; animation-delay: 2s;">💕</div>
+  <div class="heart" style="left: 40%; animation-delay: 3s;">❤️</div>
+  <div class="heart" style="left: 50%; animation-delay: 4s;">💖</div>
+  <div class="heart" style="left: 60%; animation-delay: 5s;">💕</div>
+  <div class="heart" style="left: 70%; animation-delay: 6s;">❤️</div>
+  <div class="heart" style="left: 80%; animation-delay: 7s;">💖</div>
+  <div class="heart" style="left: 90%; animation-delay: 8s;">💕</div>
+</div>
+<div id="intro-screen" class="screen">
+  <div class="card">
+    <h1>Lásková pošta</h1>
+    <div class="envelope closed" onclick="openEnvelope()">
+      <div class="flap"></div>
+      <div class="photo-card">
+        <img src="intro-photo.jpg" alt="Intro Photo">
+      </div>
+    </div>
+    <p>Klikni na obálku</p>
+  </div>
+</div>
+<div id="valentine-screen" class="screen hidden valentine-screen">
+  <div class="card valentine">
+    <h2>WILL YOU BE MY</h2>
+    <h1>Valentine?</h1>
+    <button id="yes-btn" onclick="sayYes()">YES</button>
+    <button id="no-btn">NO</button>
+    <div class="gifts">
+      <h3>Vyber si darček</h3>
+      <button onclick="openModal('letter')">💌</button>
+      <button onclick="openModal('photos')">📸</button>
+      <button onclick="openModal('music')">🎵</button>
+    </div>
+  </div>
+</div>
+<div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <div id="modal-body"></div>
+  </div>
+</div>
+<script>
+let lastMove = 0;
+const cooldown = 120;
+const card = document.querySelector('.valentine .card');
+const yesBtn = document.getElementById('yes-btn');
+const noBtn = document.getElementById('no-btn');
+
+function openEnvelope() {
+  const envelope = document.querySelector('.envelope');
+  const photoCard = document.querySelector('.photo-card');
+  envelope.classList.remove('closed');
+  envelope.classList.add('open');
+  setTimeout(() => {
+    photoCard.classList.add('slide-out');
+  }, 800);
+  setTimeout(() => {
+    document.getElementById('intro-screen').classList.add('hidden');
+    document.getElementById('valentine-screen').classList.remove('hidden');
+  }, 2000);
+}
+
+function sayYes() {
+  openModal('yes');
+}
+
+function openModal(type) {
+  const modalBody = document.getElementById('modal-body');
+  if (type === 'letter') {
+    modalBody.innerHTML = '<h3>Môj drahý lístok</h3><p>Milujem ťa viac ako slnko miluje oblohu, viac ako more miluje breh. Si môj svet, môj dych, môj všetko. Chcem stráviť každý deň s tebou, držať tvoju ruku a šepkať ti do ucha, ako veľmi ťa milujem. Ty si môj valentín, môj priateľ, môj milenec. Ďakujem ti za každý úsmev, každý dotyk, každú chvíľu. Si môj darček od Boha.</p>';
+  } else if (type === 'photos') {
+    modalBody.innerHTML = '<h3>Naše spomienky</h3><div class="photo-grid"><img src="photo1.jpg" alt="Photo 1"><img src="photo2.jpg" alt="Photo 2"><img src="photo3.jpg" alt="Photo 3"><img src="photo4.jpg" alt="Photo 4"></div>';
+  } else if (type === 'music') {
+    modalBody.innerHTML = '<h3>Naša pesnička</h3><audio controls><source src="song.mp3" type="audio/mpeg">Tvoj prehliadač nepodporuje audio tag.</audio>';
+  } else if (type === 'yes') {
+    modalBody.innerHTML = '<h3>Jupííí! 💖</h3><p>Si môj valentín! Teším sa na všetky naše spoločné chvíle.</p>';
+  }
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+document.addEventListener('pointermove', (e) => {
+  if (document.getElementById('valentine-screen').classList.contains('hidden')) return;
+  const now = Date.now();
+  if (now - lastMove < cooldown) return;
+  const rect = noBtn.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  const distance = Math.sqrt((e.clientX - centerX) ** 2 + (e.clientY - centerY) ** 2);
+  if (distance < 140) {
+    moveNo();
+    lastMove = now;
+  }
+});
+
+function moveNo() {
+  const cardRect = card.getBoundingClientRect();
+  const yesRect = yesBtn.getBoundingClientRect();
+  let newX, newY;
+  let attempts = 0;
+  do {
+    newX = Math.random() * (cardRect.width - noBtn.offsetWidth) + cardRect.left;
+    newY = Math.random() * (cardRect.height - noBtn.offsetHeight) + cardRect.top;
+    attempts++;
+  } while (overlaps(newX, newY, noBtn.offsetWidth, noBtn.offsetHeight, yesRect) && attempts < 10);
+  noBtn.style.position = 'absolute';
+  noBtn.style.left = newX - cardRect.left + 'px';
+  noBtn.style.top = newY - cardRect.top + 'px';
+}
+
+function overlaps(x, y, w, h, otherRect) {
+  return !(x + w < otherRect.left || x > otherRect.right || y + h < otherRect.top || y > otherRect.bottom);
+}
+</script>
+</body>
+</html>
